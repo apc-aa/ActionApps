@@ -134,6 +134,21 @@ document.querySelector(\'select[name="owner"]\')?.addEventListener("change", (ev
     }
 }
 
+/** Rows "Id" and "Created" of a module's settings form - they tell apart modules of the same name
+ *  (a copy made by Central, a site and its template).
+ *
+ * @param string          $module_id  long id of the module
+ * @param int|string|null $created_at module.created_at (unix time)
+ * @param string|null     $created_by module.created_by (user id)
+ */
+function FrmModuleIdCreated(string $module_id, $created_at, $created_by): void
+{
+    FrmStaticText(_m("Id"), $module_id);
+    $at = $created_at ? date('Y-m-d H:i', (int) $created_at) : '-';
+    $by = $created_by ? perm_username($created_by) : '-';
+    FrmStaticText(_m("Created"), safe($at) . ' ' . safe(_m('by')) . ' ' . safe($by), "", "", false);
+}
+
 /** RenderModuleFieldsForm function
  *  Renders the standard module-fields form section (name, slice_url, priority,
  *  lang_file, owner, deleted) via {@see ModuleFieldsForm()}, preserving the
