@@ -133,17 +133,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Gre\x9Aka: nedostaje lozinka za \xE8itanje",
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Alata za nove poruke",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "Povratak",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -576,6 +576,7 @@ return [
 "No permissions to edit links" => "Nemate dozvolu za ure\xF0ivanje veza",
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "Modul nije prona\xF0en",
 
 // modules/links/index.php, row 210
@@ -831,30 +832,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "Pogled na novu vezu",
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Nemate dozvolu za dodavanje modula",
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Nemate dozvolu za ure\xF0ivanje modula",
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Obrazac je istekao; ponovno u\xE8itajte stranicu i poku\x9Aajte ponovno.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Oznaka po\xE8etne kategorije",
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Oznaka po\xE8etka stabla mape",
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "Odaberite po\xE8etnu oznaku",
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Dodajte modul za Veze",
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Uredite modul za veze",
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "Podaci o modulima za veze",
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Kori\x9Atena jezi\xE8na datoteka",
 ];

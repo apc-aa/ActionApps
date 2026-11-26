@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "フィルタの管理", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "エラー: 読み取りパスワードがありません", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "戻る", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "再ログイン", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -550,6 +550,7 @@ return [
 "No permissions to edit links" => "リンクを編集する許可がありません", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "モジュールが見つかりません。", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -798,30 +799,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "新規リンクビュー", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "モジュールを追加する許可がありません", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "モジュールを編集する許可がありません", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "フォームの有効期限が切れました。ページを再読み込みして、もう一度お試しください。", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "開始カテゴリ ID", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "ツリー開始 ID", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "開始 ID を選択", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "リンクモジュールを追加", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "リンクモジュールを編集", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "リンクモジュールのデータ", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "使用する言語ファイル", // ai 2026-06
 ];

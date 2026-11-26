@@ -57,10 +57,12 @@ return [
 "Prints poll question" => "Vypíše otázku ankety",
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Datum zveřejnění",
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Datum expirace",
 
@@ -99,6 +101,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Součet všech hlasů. Můžete použít také {poll_sum}.",
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "Otázka",
 
 // modules/polls/menu.php, row 59
 "View poll" => "Zobrazit anketu",
@@ -153,43 +159,49 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Vzhledy",
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "Nemáte práva vložit novou anketu",
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "Modul nebyl nalezen.",
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "Nemáte práva upravovat tuto anketu",
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "Platnost formuláře vypršela; obnovte stránku a zkuste to znovu.", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => ".. po dobu",
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "prefix pro cookies",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "Přidat anketu",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "Upravit anketu",
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "Modul anket - základní nastavení",
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "Jazyk",
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "Dafaultní hodnoty pro ankety v tomto modulu",
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "Zaznamat každý hlas do logu",
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "Neumožnit hlasovat dvakrát ze stejné IP adresy",
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Znemožnit dvojí hlasování pomocí cookies",
 
@@ -213,9 +225,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "Nadpis",
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "Otázka",
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Vložte možné odpovědi a nastavte jejich pořadí",

@@ -56,10 +56,12 @@ return [
 "Prints poll question" => "Vyp\xED\x9Ae ot\xE1zku ankety",
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Datum zve\xF8ejn\xECn\xED",
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Datum expirace",
 
@@ -98,6 +100,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Sou\xE8et v\x9Aech hlas\xF9. M\xF9\x9Eete pou\x9E\xEDt tak\xE9 {poll_sum}.",
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "Ot\xE1zka",
 
 // modules/polls/menu.php, row 59
 "View poll" => "Zobrazit anketu",
@@ -152,43 +158,49 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Vzhledy",
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "Nem\xE1te pr\xE1va vlo\x9Eit novou anketu",
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "Modul nebyl nalezen.",
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "Nem\xE1te pr\xE1va upravovat tuto anketu",
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "Platnost formul\xE1\xF8e vypr\x9Aela; obnovte str\xE1nku a zkuste to znovu.", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => ".. po dobu",
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "prefix pro cookies",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "P\xF8idat anketu",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "Upravit anketu",
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "Modul anket - z\xE1kladn\xED nastaven\xED",
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "Jazyk",
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "Dafaultn\xED hodnoty pro ankety v tomto modulu",
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "Zaznamat ka\x9Ed\xFD hlas do logu",
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "Neumo\x9Enit hlasovat dvakr\xE1t ze stejn\xE9 IP adresy",
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Znemo\x9Enit dvoj\xED hlasov\xE1n\xED pomoc\xED cookies",
 
@@ -212,9 +224,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "Nadpis",
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "Ot\xE1zka",
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Vlo\x9Ete mo\x9En\xE9 odpov\xECdi a nastavte jejich po\xF8ad\xED",

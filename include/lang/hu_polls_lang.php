@@ -48,10 +48,12 @@ return [
 "Prints poll question" => "Ki\xEDrja a szavaz\xE1s k\xE9rd\xE9s\xE9t", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "K\xF6zz\xE9t\xE9tel d\xE1tuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Lej\xE1rat d\xE1tuma", // ai 2026-06
 
@@ -90,6 +92,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Az \xF6sszes szavazat sz\xE1ma. Haszn\xE1lhat\xF3 a {poll_sum} is.", // ai 2026-06
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "K\xE9rd\xE9s", // ai 2026-06
 
 // modules/polls/menu.php, row 59
 "View poll" => "Szavaz\xE1s megtekint\xE9se", // ai 2026-06
@@ -144,43 +150,49 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Megjelen\xE9sek", // ai 2026-06
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "Nincs jogosults\xE1ga szavaz\xE1sok hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "A modul nem tal\xE1lhat\xF3.", // ai 2026-06
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "Nincs jogosults\xE1ga a szavaz\xE1s szerkeszt\xE9s\xE9hez", // ai 2026-06
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "Az \xFBrlap lej\xE1rt; t\xF6ltse \xFAjra az oldalt, \xE9s pr\xF3b\xE1lja meg ism\xE9t.", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => "IP-z\xE1rol\xE1s id\xF5korl\xE1tja", // ai 2026-06
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "Cookie-el\xF5tag", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "Szavaz\xE1sok hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "Szavaz\xE1sok szerkeszt\xE9se", // ai 2026-06
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "Szavaz\xE1sok modul - \xE1ltal\xE1nos adatok", // ai 2026-06
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "Haszn\xE1lt nyelvi f\xE1jl", // ai 2026-06
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "Alap\xE9rtelmez\xE9sek a modul szavaz\xE1saihoz", // ai 2026-06
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "Napl\xF3z\xE1s haszn\xE1lata", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "IP-z\xE1rol\xE1s haszn\xE1lata", // ai 2026-06
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Cookie-k haszn\xE1lata", // ai 2026-06
 
@@ -204,9 +216,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "C\xEDm", // ai 2026-06
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "K\xE9rd\xE9s", // ai 2026-06
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Adja meg az \xFAj v\xE1laszokat, \xE9s v\xE1lassza ki sorrendj\xFCket", // ai 2026-06

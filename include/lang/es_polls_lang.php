@@ -56,10 +56,12 @@ return [
 "Prints poll question" => "Muestra la pregunta de la encuesta",
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Fecha de publicaci\xF3n",
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Fecha de expiraci\xF3n",
 
@@ -98,6 +100,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Suma de todos los votos. Tambi\xE9n puede usar {poll_sum}.",
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "Pregunta",
 
 // modules/polls/menu.php, row 59
 "View poll" => "Ver encuesta",
@@ -152,43 +158,49 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Dise\xF1os",
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "Usted no tiene permisos para a\xF1adir encuestas",
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "No se encontr\xF3 el m\xF3dulo",
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "Usted no tiene permisos de editar esta encuesta",
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "El formulario ha caducado; recargue la p\xE1gina e int\xE9ntelo de nuevo.", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => "Utilice bloqueo de IP por tiempo",
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "Prefijo de cookies",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "A\xF1adir encuestas",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "Editar encuestas",
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "M\xF3dulo de datos generales de encuestas",
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "Archivo de idioma utilizado",
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "Predeterminados para m\xF3dulo de encuestas",
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "Utilice log de acceso",
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "Utilice bloqueo de IP",
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Utilice cookies",
 
@@ -212,9 +224,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "Encabezado",
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "Pregunta",
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Inserte nuevas respuestas y seleccione su orden",

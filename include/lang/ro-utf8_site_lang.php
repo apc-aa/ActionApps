@@ -22,54 +22,59 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "Administrare %1", // ai 2026-06
 
-// modules/site/index.php, row 64
+// modules/site/index.php, row 67
 "You do not have permission to edit items in this slice" => "Nu aveţi dreptul să editaţi articole în această secţiune",
 
-// modules/site/index.php, row 69
+// modules/site/index.php, row 72
 "Starting spot not found" => "Spotul de pornire nu a fost găsit", // ai 2026-06
 
-// modules/site/index.php, row 152
+// modules/site/index.php, row 91
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 218
+"The form has expired; reload the page and try again." => "Formularul a expirat; reîncărcați pagina și încercați din nou.", // ai 2026-10
+
+// modules/site/index.php, row 163
 "Editor window - site code manager" => "Fereastră editor - administrare cod site", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 175
 "Add&nbsp;spot" => "Adaugă&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 165
+// modules/site/index.php, row 176
 "Add&nbsp;choice" => "Adaugă&nbsp;opțiune", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 179
 "Move&nbsp;up" => "Mută&nbsp;sus", // ai 2026-06
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 180
 "Move&nbsp;down" => "Mută&nbsp;jos", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 183
 "Move&nbsp;left" => "Mută&nbsp;la&nbsp;stânga", // ai 2026-06
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 184
 "Move&nbsp;right" => "Mută&nbsp;la&nbsp;dreapta", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Şterge",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 "Are you sure you want to delete the spot?" => "Sigur doriți să ștergeți spotul?", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 190
 "Enable" => "Activează", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 191
 "Disable" => "Dezactivează", // ai 2026-06
 
-// modules/site/index.php, row 201
+// modules/site/index.php, row 212
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Posibile require de sistem - &lcub;require:...&rcub; sau &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Vizualizare sit",
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 298
+// modules/site/modedit.php, row 305
 "Site" => "Site",
 
 // modules/site/menu.php, row 80
@@ -84,92 +89,89 @@ return [
 // modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nu aveți dreptul să ștergeți un site.", // ai 2026-06
 
-// modules/site/moddelete.php, row 53
-// modules/site/modedit.php, row 212
-"The form has expired; reload the page and try again." => "Formularul a expirat; reîncărcați pagina și încercați din nou.", // ai 2026-10
-
 // modules/site/moddelete.php, row 56
+// modules/site/modedit.php, row 119
 "Module not found." => "Modulul nu a fost găsit.", // ai 2026-06
 
 // modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Secţiune ştearsă cu succes, tabelele sunt optimizate",
 
-// modules/site/modedit.php, row 112
+// modules/site/modedit.php, row 115
 "You do not have permissions to add slice" => "Nu aveţi dreptul să adăugaţi secţiune",
 
-// modules/site/modedit.php, row 117
+// modules/site/modedit.php, row 123
 "You do not have permissions to edit this slice" => "Nu aveţi dreptul să editaţi această secţiune",
 
-// modules/site/modedit.php, row 125
+// modules/site/modedit.php, row 131
 "The settings and the other fields of this page were not saved." => "Setările și celelalte câmpuri ale acestei pagini nu au fost salvate.", // ai 2026-10
 
-// modules/site/modedit.php, row 140
+// modules/site/modedit.php, row 146
 "State file" => "Fișier de stare", // ai 2026-06
 
-// modules/site/modedit.php, row 141, 306
+// modules/site/modedit.php, row 147, 313
 "Router" => "Router", // ai 2026-10
 
-// modules/site/modedit.php, row 142, 320
+// modules/site/modedit.php, row 148, 327
 "Uses modules" => "Utilizează module", // ai 2026-06
 
-// modules/site/modedit.php, row 152
+// modules/site/modedit.php, row 158
 "You can not use these modules in the site - you have no permission to them: %1" => "Nu puteți folosi aceste module în site - nu aveți drepturi asupra lor: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 223
+// modules/site/modedit.php, row 229
 "The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Setările catalogului de aplicații nu au fost salvate - catalogul nu va oferi site-ul până când nu sunt corectate aceste erori:", // ai 2026-10
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Add Site" => "Adăugare site", // ai 2026-06
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Edit Site" => "Editare site", // ai 2026-06
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 312
 "Used Language File" => "Fişier limbă utilizată",
 
-// modules/site/modedit.php, row 306
+// modules/site/modedit.php, row 313
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Folosiți AA_Router_Seo. Altfel veți folosi vechea abordare a modulului site cu 'fișier de control', pe care nu o putem recomanda.", // ai 2026-06
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "Home or State file" => "Pagină de start sau fișier de stare", // ai 2026-06
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Pentru AA_Router_Seo completați <b>URL-ul implicit</b> (pagina de start) - de exemplu <em>/en/home</em> sau lăsați-l gol<br><br>Pentru site-urile mai vechi fără AA_Router_Seo completați numele <b>fișierului de control al site-ului</b> - va fi plasat în directorul /modules/site/sites/. Numelui specificat i se va adăuga prefixul 'site_', deci dacă de exemplu numiți fișierul 'apc.php', fișierul de control al site-ului va fi /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 322
+// modules/site/modedit.php, row 332
 "Additional setting" => "Setări suplimentare", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 337
 "App store" => "Catalog de aplicații", // ai 2026-10
 
-// modules/site/modedit.php, row 329
+// modules/site/modedit.php, row 339
 "A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Un site publicat poate fi instalat din acest AA de orice alt AA - împreună cu secțiunile și modulele Alerte pe care le folosește: șabloanele, câmpurile, vederile și constantele lor, niciodată articolele. Doar un superadmin poate seta acest lucru.", // ai 2026-10
 
-// modules/site/modedit.php, row 333
+// modules/site/modedit.php, row 343
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Modulele site-ului s-au schimbat de la publicare: %1 - catalogul de aplicații nu va oferi site-ul până când un superadmin nu le aprobă.", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Approve the changed modules: %1" => "Aprobare module modificate: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Their templates, fields, views and constants then go to the app store with the site." => "Șabloanele, câmpurile, vederile și constantele lor vor ajunge apoi în catalogul de aplicații împreună cu site-ul.", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "Publish in the app store" => "Publicare în catalogul de aplicații", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Aplicația publicată nu are avertismente: orice avertisment al exportului său este o eroare. O oprește și un grup de constante deținut de o secțiune din afara tuturor site-urilor publicate.", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "App description" => "Descriere aplicație", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "What the app does, for the list of the app store." => "Ce face aplicația, pentru lista din catalogul de aplicații.", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "App version" => "Versiune aplicație", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "Like 1.2.0." => "De exemplu 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005

@@ -22,54 +22,59 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "Správa %1",
 
-// modules/site/index.php, row 64
+// modules/site/index.php, row 67
 "You do not have permission to edit items in this slice" => "Nemáte oprávnění upravovat články v tomto webíku",
 
-// modules/site/index.php, row 69
+// modules/site/index.php, row 72
 "Starting spot not found" => "Výchozí spot nebyl nalezen",
 
-// modules/site/index.php, row 152
+// modules/site/index.php, row 91
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 218
+"The form has expired; reload the page and try again." => "Platnost formuláře vypršela; obnovte stránku a zkuste to znovu.", // ai 2026-10
+
+// modules/site/index.php, row 163
 "Editor window - site code manager" => "Editační okno - správce kódu webu",
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 175
 "Add&nbsp;spot" => "Přidat&nbsp;spot",
 
-// modules/site/index.php, row 165
+// modules/site/index.php, row 176
 "Add&nbsp;choice" => "Přidat&nbsp;volbu",
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 179
 "Move&nbsp;up" => "Posunout&nbsp;nahoru",
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 180
 "Move&nbsp;down" => "Posunout&nbsp;dolů",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 183
 "Move&nbsp;left" => "Posunout&nbsp;doleva",
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 184
 "Move&nbsp;right" => "Posunout&nbsp;doprava",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Smazat",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 "Are you sure you want to delete the spot?" => "Opravdu chcete tento spot smazat?",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 190
 "Enable" => "Povolit",
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 191
 "Disable" => "Zakázat",
 
-// modules/site/index.php, row 201
+// modules/site/index.php, row 212
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Možné systémové require - &lcub;require:...&rcub; nebo &lcub;require:[\"...\",\"...\"]&rcub;",
 
 // modules/site/menu.php, row 47
 "View site" => "Zobrazit web",
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 298
+// modules/site/modedit.php, row 305
 "Site" => "Web",
 
 // modules/site/menu.php, row 80
@@ -84,92 +89,89 @@ return [
 // modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nemáte oprávnění smazat web.",
 
-// modules/site/moddelete.php, row 53
-// modules/site/modedit.php, row 212
-"The form has expired; reload the page and try again." => "Platnost formuláře vypršela; obnovte stránku a zkuste to znovu.", // ai 2026-10
-
 // modules/site/moddelete.php, row 56
+// modules/site/modedit.php, row 119
 "Module not found." => "Modul nebyl nalezen.",
 
 // modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Webík byl úspěšně smazán, tabulky jsou optimalizovány",
 
-// modules/site/modedit.php, row 112
+// modules/site/modedit.php, row 115
 "You do not have permissions to add slice" => "Nemáte oprávnění přidat webík",
 
-// modules/site/modedit.php, row 117
+// modules/site/modedit.php, row 123
 "You do not have permissions to edit this slice" => "Nemáte oprávnění upravovat tento webík",
 
-// modules/site/modedit.php, row 125
+// modules/site/modedit.php, row 131
 "The settings and the other fields of this page were not saved." => "Nastavení ani ostatní políčka této stránky nebyla uložena.", // ai 2026-10
 
-// modules/site/modedit.php, row 140
+// modules/site/modedit.php, row 146
 "State file" => "Stavový soubor",
 
-// modules/site/modedit.php, row 141, 306
+// modules/site/modedit.php, row 147, 313
 "Router" => "Router",
 
-// modules/site/modedit.php, row 142, 320
+// modules/site/modedit.php, row 148, 327
 "Uses modules" => "Používá moduly",
 
-// modules/site/modedit.php, row 152
+// modules/site/modedit.php, row 158
 "You can not use these modules in the site - you have no permission to them: %1" => "Tyto moduly nemůžete na webu použít - nemáte k nim oprávnění: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 223
+// modules/site/modedit.php, row 229
 "The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Nastavení katalogu aplikací nebylo uloženo - katalog web nenabídne, dokud nebudou opraveny tyto chyby:", // ai 2026-10
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Add Site" => "Přidat web",
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Edit Site" => "Upravit web",
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 312
 "Used Language File" => "Použitý jazykový soubor",
 
-// modules/site/modedit.php, row 306
+// modules/site/modedit.php, row 313
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Použijte AA_Router_Seo. Jinak budete používat starý přístup modulu site s 'řídicím souborem', což nedoporučujeme.",
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "Home or State file" => "Domovská stránka nebo stavový soubor",
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Pro AA_Router_Seo vyplňte <b>výchozí url</b> (domovskou stránku) - např. <em>/en/home</em>, nebo ponechte prázdné<br><br>Pro starší weby bez AA_Router_Seo vyplňte název <b>řídicího souboru webu</b> - bude umístěn v adresáři /modules/site/sites/. K zadanému názvu se přidá předpona 'site_', takže pokud soubor pojmenujete např. 'apc.php', řídicí soubor webu bude /modules/site/sites/site_apc.php.",
 
-// modules/site/modedit.php, row 322
+// modules/site/modedit.php, row 332
 "Additional setting" => "Další nastavení",
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 337
 "App store" => "Katalog aplikací", // ai 2026-10
 
-// modules/site/modedit.php, row 329
+// modules/site/modedit.php, row 339
 "A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zveřejněný web si z tohoto AA může nainstalovat kterékoli AA - i s webíky a moduly Zasílání, které web používá: jejich šablony, políčka, pohledy a hodnoty, nikdy však články. Nastavit to může jen superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 333
+// modules/site/modedit.php, row 343
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduly webu se od zveřejnění změnily: %1 - katalog aplikací web nenabídne, dokud je neschválí superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Approve the changed modules: %1" => "Schválit změněné moduly: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Their templates, fields, views and constants then go to the app store with the site." => "Jejich šablony, políčka, pohledy a hodnoty pak půjdou do katalogu aplikací spolu s webem.", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "Publish in the app store" => "Zveřejnit v katalogu aplikací", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Zveřejněná aplikace nemá varování: každé varování jejího exportu je chybou. Zastaví ji i skupina hodnot, kterou vlastní webík mimo všechny zveřejněné weby.", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "App description" => "Popis aplikace", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "What the app does, for the list of the app store." => "Co aplikace dělá - pro seznam v katalogu aplikací.", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "App version" => "Verze aplikace", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "Like 1.2.0." => "Např. 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005

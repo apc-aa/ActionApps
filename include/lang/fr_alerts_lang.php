@@ -10,6 +10,7 @@ $mgettext_lang = "fr";
 
 return [
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Failed" => "\xC9chou\xE9s", // ai 2026-11
 // "Core settings for the Alerts." => "Param\xE8tres principaux des alertes.", // ai 2026-06
 // "form URL" => "URL du formulaire", // ai 2026-06
 // "Use AA Admin / Delete<br>to delete permanently" => "Utilisez AA Admin / Supprimer<br>pour supprimer d\xE9finitivement", // ai 2026-06
@@ -20,7 +21,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Vous n'avez pas la permission d'ajouter des sections",
 
 // modules/alerts/acf.php, row 109
@@ -59,79 +60,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Aucune s\xE9lection d\xE9finie. Vous devez en d\xE9finir.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Section des statistiques: cette section n'existe pas", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "La section des statistiques ne peut pas \xEAtre la section des lecteurs", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "Il manque \xE0 la section des statistiques les champs %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "La section conserve d\xE9j\xE0 les statistiques d'une autre liste (%1) - chaque liste a besoin de sa propre section", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "La section des statistiques conserve l'historique de ses items - mettez \xABConserver l'historique des items pendant N jours\xBB \xE0 0 dans la configuration de sa section", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "La section des statistiques n'a pas de mot de passe de lecture - d\xE9finissez-en un dans la configuration de sa section, afin que ses items ne s'affichent pas sur le web", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "Alertes Alerte",
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "Alerte bienvenue",
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "Bienvenue assistant de section",
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "mod\xE8le d'utilisateur", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "changement de mot de passe", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "autre",
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Alias pour Alertes Alerte",
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "Filtre de texte complet",
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "combien de fois",
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Formulaire URL Anonyme (choisi dans administration des alertes - configurations)",
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "URL du formulaire de d\xE9sabonnment", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Alias pour alerte de bienvenue",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "Formulaire URL de collection (choisi dans administration des alertes - configurations)",
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "Courriel confirm\xE9", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Alias pour l'assistant de bienvenue \xE0 la section", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Nom de la section",
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "Nouveau nom d'usager",
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "Nouveau nom d'usager",
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "Nouveau r\xF4le pour l'usager (\xE9diteur / administrateur)", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Mon nom",
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "Mon courriel",
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Alias pour les mod\xE8les d'utilisateur (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Alias pour le courriel de changement de mot de passe (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "Lien HTML vers la page de changement de mot de passe pour l'utilisateur actuel", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Param\xE8tre d'URL utilis\xE9 pour le lien de changement de mot de passe dans _#PWD_LINK (vous pouvez l'utiliser si vous voulez utiliser votre propre URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
@@ -167,63 +186,126 @@ return [
 "Owner" => "Propri\xE9taire", // ai 2026-10
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "Mod\xE8les de courriel", // ai 2026-10
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "Configuration des alertes", // ai 2026-06
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "Module introuvable.", // ai 2026-06
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "Administration Alerte",
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Vous n'avez pas de permission pour cette page",
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Ce module Alerte n'a pas de liste de lecteurs.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Envois et statistiques", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "Les ouvertures et les clics ne sont pas mesur\xE9s: la liste n'a pas de section des statistiques.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Configuration",
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "Date", // ai 2026-11
+
+// modules/alerts/mailings.php, row 97
+"Name" => "Nom",
+
+// modules/alerts/mailings.php, row 97
+"State" => "\xC9tat", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "Destinataires",
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Ouverts", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Cliqu\xE9s", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "La liste n'a encore rien envoy\xE9.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Aucun destinataire ne correspond au filtre.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "Configuration des alertes", // ai 2026-06
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "Administration Alerte",
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "S\xE9lections", // ai 2026-06
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "Envoyer courriels",
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "gestion des lecteurs",
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Documentation", // ai 2026-10
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "Commun", // ai 2026-06
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Vous n'avez pas la permission de modifier ce module Alertes", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Le formulaire a expir\xE9 ; rechargez la page et r\xE9essayez.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Vous ne pouvez pas choisir cette section des statistiques", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "Ajouter Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "L'URL de cette liste n'est pas en https - les courriels partent sans l'en-t\xEAte de d\xE9sabonnement en un clic.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "langue", // ai 2026-06
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "Courriels d'alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "Modifier \xAB %1 \xBB", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "courriel de bienvenue", // ai 2026-06
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "courriel d'alerte", // ai 2026-06
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "ID des alertes", // ai 2026-06
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "La section o\xF9 sont compt\xE9es les ouvertures et les clics des envois; vide = rien n'est mesur\xE9. Chaque liste a besoin de sa propre section.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Vous n'avez pas de permission pour cette page",
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Installer depuis le catalogue d'applications", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Statistiques", // ai 2026-06
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Section des statistiques", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "ID des alertes", // ai 2026-06
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "Envoyer les courriels", // ai 2026-06
@@ -276,46 +358,46 @@ return [
  => "D\xE9finissez les s\xE9lections dans les sections depuis lesquelles vous voulez envoyer des alertes,\n"
    ."        dans des vues de type Ensemble de s\xE9lections d'alertes", // ai 2026-06
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Synchronisation avec la section de gestion des lecteurs", // ai 2026-06
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "Pas encore d\xE9fini", // ai 2026-06
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "Choisir la section de gestion des lecteurs", // ai 2026-06
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Cette collection d'alertes prend les donn\xE9es des utilisateurs dans la section", // ai 2026-06
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "Changer en : ", // ai 2026-06
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "et supprimer les champs sp\xE9cifiques \xE0 %1 de %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "Changer",
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "Ajouter les champs sp\xE9cifiques \xE0 %1 dans %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "N'ajoute que les champs dont les identifiants n'existent pas encore dans la section.\n"
    ."    Actualise le groupe de constantes contenant les s\xE9lections s'il existe d\xE9j\xE0.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Nom du champ", // ai 2026-06
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "ID du champ", // ai 2026-06
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Ajouter ou actualiser les champs", // ai 2026-06
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Cette commande ne peut pas \xEAtre utilis\xE9e tant que vous n'avez pas choisi la section de gestion des lecteurs.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -371,4 +453,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "casier d\xE9tritus", // ai 2026-10
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Voulez-vous ne plus recevoir les courriels de cette liste?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Se d\xE9sabonner", // ai 2026-11
 ];

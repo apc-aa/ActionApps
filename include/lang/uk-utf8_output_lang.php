@@ -13,29 +13,29 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 239
+// ./slice.php, row 240
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Хибний параметр inc - включений файл може містити лише буквено-цифрові символи", // ai 2026-06
 
-// ./slice.php, row 243
+// ./slice.php, row 244
 "No such file" => "Такого файлу немає", // ai 2026-06
 
-// ./slice.php, row 264
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Недійсний номер рубрики або рубрику видалено", // ai 2026-06
 
-// ./slice.php, row 267
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Вивід через slice.php для цієї рубрики заборонено", // ai 2026-06
 
-// ./slice.php, row 322
+// ./slice.php, row 339
 "session id" => "id сесії", // ai 2026-06
 
-// ./slice.php, row 585
+// ./slice.php, row 607
 "number of current page (on pagescroller)" => "номер поточної сторінки (у посторінковому перегляді)", // ai 2026-06
 
-// ./slice.php, row 586
+// ./slice.php, row 608
 "page length (number of items)" => "довжина сторінки (кількість статей)", // ai 2026-06
 
-// ./slice.php, row 621
-// include/view.php, row 373
+// ./slice.php, row 643
+// include/view.php, row 391
 "No item found" => "Жодної статті не знайдено", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -173,19 +173,19 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Рівень константи (використовується для ієрархічних констант)", // ai 2026-06
 
-// include/item.php, row 830
+// include/item.php, row 852
 "Error: wrong alias function %1 for %2" => "Помилка: неправильна функція аліасу %1 для %2", // ai 2026-06
 
-// include/itemview.php, row 123
+// include/itemview.php, row 125
 "Selected item" => "Вибрана стаття", // ai 2026-06
 
-// include/itemview.php, row 130
+// include/itemview.php, row 132
 "number of found items" => "кількість знайдених статей", // ai 2026-06
 
-// include/itemview.php, row 378
+// include/itemview.php, row 380
 "No comment was selected" => "Не вибрано жодного коментаря", // ai 2026-06
 
-// include/itemview.php, row 723, 731
+// include/itemview.php, row 727, 735
 "exact group name" => "точна назва групи", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -197,13 +197,13 @@ return [
 // include/scroller.php, row 88
 "All" => "Усі", // ai 2026-06
 
-// include/scroller.php, row 296
+// include/scroller.php, row 306
 "found" => "знайдено", // ai 2026-06
 
-// include/scroller.php, row 452
+// include/scroller.php, row 462
 "&raquo;" => "",
 
-// include/scroller.php, row 453
+// include/scroller.php, row 463
 "&laquo;" => "",
 
 // include/slice.php, row 69
@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Усі рубрики", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Увійти знову", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -230,6 +230,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Отримує дані про зв'язки статті, надіслані формою (POST)", // ai 2026-06
 
-// modules/site/site.php, row 308
+// modules/site/site.php, row 311
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Сайт налаштовано неправильно: %1 не існує або його неможливо прочитати. Додайте цей файл або виправте налаштування «State file» цього модуля сайту.", // ai 2026-10
 ];

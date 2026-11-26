@@ -28,29 +28,29 @@ return [
 // "Home" => "Povratak na po\xE8etnu stranicu",
 // End of unused messages
 
-// ./slice.php, row 239
+// ./slice.php, row 240
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Neispravan parametar inc - uklju\xE8ena datoteka smije sadr\x9Eavati samo alfanumeri\xE8ke znakove", // ai 2026-06
 
-// ./slice.php, row 243
+// ./slice.php, row 244
 "No such file" => "Ne postoji datoteka",
 
-// ./slice.php, row 264
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Krivi broj stranice ili je stranica obrisana",
 
-// ./slice.php, row 267
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Izlaz preko slice.php zabranjen je za ovu stranicu", // ai 2026-06
 
-// ./slice.php, row 322
+// ./slice.php, row 339
 "session id" => "ID sesije", // ai 2026-06
 
-// ./slice.php, row 585
+// ./slice.php, row 607
 "number of current page (on pagescroller)" => "broj trenutne stranice (u strani\xE8enju)", // ai 2026-06
 
-// ./slice.php, row 586
+// ./slice.php, row 608
 "page length (number of items)" => "duljina stranice (broj stavki)", // ai 2026-06
 
-// ./slice.php, row 621
-// include/view.php, row 373
+// ./slice.php, row 643
+// include/view.php, row 391
 "No item found" => "Nije prona\xF0ena stavka",
 
 // include/discussion.php, row 211
@@ -179,19 +179,19 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Razina konstante (koristi se za hijerarhijske konstante)", // ai 2026-06
 
-// include/item.php, row 830
+// include/item.php, row 852
 "Error: wrong alias function %1 for %2" => "Gre\x9Aka: pogre\x9Ana funkcija sinonima %1 za %2", // ai 2026-06
 
-// include/itemview.php, row 123
+// include/itemview.php, row 125
 "Selected item" => "Odabrana stavka", // ai 2026-06
 
-// include/itemview.php, row 130
+// include/itemview.php, row 132
 "number of found items" => "broj prona\xF0enih stavki",
 
-// include/itemview.php, row 378
+// include/itemview.php, row 380
 "No comment was selected" => "Nije odabran nijedan komentar",
 
-// include/itemview.php, row 723, 731
+// include/itemview.php, row 727, 735
 "exact group name" => "to\xE8an naziv grupe", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -203,13 +203,13 @@ return [
 // include/scroller.php, row 88
 "All" => "Sve",
 
-// include/scroller.php, row 296
+// include/scroller.php, row 306
 "found" => "prona\xF0eno", // ai 2026-06
 
-// include/scroller.php, row 452
+// include/scroller.php, row 462
 "&raquo;" => "",
 
-// include/scroller.php, row 453
+// include/scroller.php, row 463
 "&laquo;" => "",
 
 // include/slice.php, row 69
@@ -218,16 +218,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Sve kategorije",
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "GRE\x8AKA: Nema lozinke za \xE8itanje",
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Alat za nove poruke",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Back" => "Ntrag",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -236,6 +236,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Preuzima podatke o vezama stavki poslane formom (POST)", // ai 2026-06
 
-// modules/site/site.php, row 308
+// modules/site/site.php, row 311
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Web je pogre\x9Ano postavljen: %1 ne postoji ili se ne mo\x9Ee pro\xE8itati. Dodajte tu datoteku ili ispravite postavku \x84State file\x93 ovog modula weba.", // ai 2026-10
 ];

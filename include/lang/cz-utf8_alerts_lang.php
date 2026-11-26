@@ -82,7 +82,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Nemáte práva pro přidání webíku",
 
 // modules/alerts/acf.php, row 109
@@ -121,79 +121,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Žádné výběry nejsou definované.",
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Webík statistik: takový webík neexistuje", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "Webík statistik nemůže být webíkem čtenářů", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "Webíku statistik chybějí políčka %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "Webík už uchovává statistiky jiného seznamu (%1) – každý seznam potřebuje vlastní", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "Webík statistik uchovává historii svých článků – v nastavení webíku nastavte „Ukládat historii článků po N dní“ na 0", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "Webík statistik nemá heslo pro čtení – nastavte ho v nastavení webíku, aby se jeho články nezobrazovaly na webu", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "zasílání - zprávy",
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "zasílání - uvítání",
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "průvodce webíkem - uvítání",
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "šablona uživatele",
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "změna hesla",
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "jiné",
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Aliasy pro e-mail zasílání - zprávy",
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "úplný text filtru",
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "jak často",
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL anonymního formuláře (nastavuje se v Administraci zasílání - Nastavení)",
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "URL formuláře pro odhlášení",
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Aliasy pro e-mail zasílání - uvítání",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formuláře kolekce (nastavuje se v Administraci zasílání - Nastavení)",
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "e-mail potvrzen",
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Aliasy pro uvítání průvodce webíkem",
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Název webíku",
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "Jméno nového uživatele",
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "Přihlašovací jméno nového uživatele",
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "Role nového uživatele (editor / admin)",
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Mé jméno",
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "Můj e-mail",
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasy pro šablony uživatele (můžete použít také všechny aliasy uživatele)",
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasy pro e-mail změny hesla (můžete použít také všechny aliasy uživatele)",
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "HTML odkaz na stránku změny hesla pro aktuálního uživatele",
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametr URL používaný v odkazu na změnu hesla v _#PWD_LINK (můžete jej využít, pokud pro něj chcete použít vlastní URL)",
 
 // modules/alerts/cf_common.php, row 42
@@ -229,63 +247,126 @@ return [
 "Owner" => "Vlastník",
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "Šablony emailů",
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "Nastavení Zasílání",
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "Modul nebyl nalezen.",
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "Nastavení Zasílání",
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Nemáte právo přistupovat k této stránce",
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Tento modul Zasílání nemá seznam čtenářů.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Rozesílky a statistiky", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "Otevření a kliknutí se neměří: seznam nemá webík statistik.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Nastavení",
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "Datum",
+
+// modules/alerts/mailings.php, row 97
+"Name" => "Název", // ai 2026-11
+
+// modules/alerts/mailings.php, row 97
+"State" => "Stav",
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "Příjemci",
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Otevřeno", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Kliknuto", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "Seznam zatím nic nerozeslal.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Filtru neodpovídá žádný příjemce.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "Nastavení Zasílání",
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "Nastavení Zasílání",
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "Výběry",
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "Poslat emaily",
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "Správa čtenářů",
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Dokumentace",
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "Společné",
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Nemáte oprávnění upravovat tento modul Zasílání", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Platnost formuláře vypršela; obnovte stránku a zkuste to znovu.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Tento webík statistik nemůžete zvolit", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "Přidat Zasílání", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "URL tohoto seznamu není https – e-maily odcházejí bez hlavičky pro odhlášení jedním kliknutím.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "jazyk",
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "E-maily Zasílání", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "Upravit '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "uvítací email",
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "email s novinkami",
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "ID zasílání",
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "Webík, do kterého se počítají otevření a kliknutí z rozesílek; prázdné = nic se neměří. Každý seznam potřebuje vlastní webík.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Nemáte právo přistupovat k této stránce",
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Nainstalovat z Katalogu aplikací", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Statistiky",
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Webík statistik", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "ID zasílání",
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "Posílání Emailů",
@@ -338,46 +419,46 @@ return [
  => "Definujte výběry ve webících, ze kterých chcete zasílat zprávy,\n"
    ."        v pohledech typu Alerts Selection Set",
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Synchronizace s webíkem spravujícím čtenáře",
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "Ještě nenastaveno",
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "Zvolte webík se Správou Čtenářů",
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Toto Zasílání používá čtenářská data z webíku",
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "Změnit na: ",
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "a smazat políčka specifická pro %1 z %2",
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "Změnit",
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "Přidat políčka specifická pro %1 do %2",
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Přidá pouze políčka jejichž ID ještě neexistují ve webíku. \n"
    ."    Obnoví skupinu hodnot s výběry pokud tato již existuje.",
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Název Políčka",
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "ID Políčka",
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Přidat nebo obnovit políčka",
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Tento příkaz nemůžete použít dokud nezvolíte Webík se Správou Čtenářů.",
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -433,4 +514,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "Koš",
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Chcete přestat dostávat e-maily tohoto seznamu?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Odhlásit se", // ai 2026-11
 ];

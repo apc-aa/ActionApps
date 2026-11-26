@@ -104,17 +104,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "",
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "",
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "",
 
 // modules/links/actions.php, row 48, 90, 114
@@ -547,6 +547,7 @@ return [
 "No permissions to edit links" => "",
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "",
 
 // modules/links/index.php, row 210
@@ -795,30 +796,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "",
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "",
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "",
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "",
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "",
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "",
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "",
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "",
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "",
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "",
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "",
 ];

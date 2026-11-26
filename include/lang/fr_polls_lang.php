@@ -48,10 +48,12 @@ return [
 "Prints poll question" => "Affiche la question du sondage", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Date de publication", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Date d'expiration", // ai 2026-06
 
@@ -90,6 +92,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Somme de tous les votes. Vous pouvez aussi utiliser {poll_sum}.", // ai 2026-06
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "Question", // ai 2026-10
 
 // modules/polls/menu.php, row 59
 "View poll" => "Voir le sondage", // ai 2026-06
@@ -139,48 +145,54 @@ return [
 "Main settings" => "Configuration principales",
 
 // modules/polls/menu.php, row 118
-"Polls" => "mise en commun",
+"Polls" => "Sondages", // ai 2026-11
 
 // modules/polls/menu.php, row 119
 "Designs" => "Apparences", // ai 2026-06
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "Vous n'avez pas la permission d'ajouter des sondages", // ai 2026-06
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "Module introuvable.", // ai 2026-06
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "Vous n'avez pas la permission de modifier ce sondage", // ai 2026-06
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "Le formulaire a expir\xE9 ; rechargez la page et r\xE9essayez.", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => "D\xE9lai de verrouillage IP", // ai 2026-06
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "Pr\xE9fixe des cookies", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "Ajouter des sondages", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "Modifier les sondages", // ai 2026-06
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "Donn\xE9es g\xE9n\xE9rales du module Sondages", // ai 2026-06
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "Fichier de langue utilis\xE9", // ai 2026-10
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "Valeurs par d\xE9faut des sondages de ce module", // ai 2026-06
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "Utiliser la journalisation", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "Utiliser le verrouillage IP", // ai 2026-06
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Utiliser les cookies", // ai 2026-06
 
@@ -204,9 +216,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "Manchette",
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "Question", // ai 2026-10
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Saisissez les nouvelles r\xE9ponses et choisissez leur ordre", // ai 2026-06

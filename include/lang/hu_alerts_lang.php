@@ -20,7 +20,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Nincs jogosults\xE1ga rovat hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
 // modules/alerts/acf.php, row 109
@@ -59,79 +59,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nincsenek defini\xE1lt v\xE1logat\xE1sok. Defini\xE1lnia kell legal\xE1bb egyet.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Statisztikai rovat: nincs ilyen rovat", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "A statisztikai rovat nem lehet azonos az olvas\xF3i rovattal", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "A statisztikai rovatb\xF3l hi\xE1nyoznak a k\xF6vetkez\xF5 mez\xF5k: %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "A rovat m\xE1r egy m\xE1sik lista statisztik\xE1it t\xE1rolja (%1) - minden list\xE1nak saj\xE1t rovat kell", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "A statisztikai rovat t\xE1rolja cikkei el\xF5zm\xE9nyeit - a rovat be\xE1ll\xEDt\xE1saiban \xE1ll\xEDtsa a ,,Cikk-el\xF5zm\xE9nyek t\xE1rol\xE1sa N napig\" \xE9rt\xE9k\xE9t 0-ra", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "A statisztikai rovatnak nincs olvas\xE1si jelszava - \xE1ll\xEDtson be egyet a rovat be\xE1ll\xEDt\xE1saiban, hogy cikkei ne jelenjenek meg a weben", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "\xE9rtes\xEDt\xF5 e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "\xFCdv\xF6zl\xF5 e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "rovatvar\xE1zsl\xF3 \xFCdv\xF6zl\xF5je", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "felhaszn\xE1l\xF3i sablon", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "jelsz\xF3m\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "egy\xE9b", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Aliasok az \xE9rtes\xEDt\xF5 e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "a sz\xFBr\xF5 teljes sz\xF6vege", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "milyen gyakran", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Anonim \xFBrlap URL-je (az \xC9rtes\xEDt\xE9sek adminisztr\xE1ci\xF3ja - Be\xE1ll\xEDt\xE1sok alatt \xE1ll\xEDthat\xF3 be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "Leiratkoz\xE1si \xFBrlap URL-je", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Aliasok az \xFCdv\xF6zl\xF5 e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "Gy\xFBjtem\xE9ny\xFBrlap URL-je (az \xC9rtes\xEDt\xE9sek adminisztr\xE1ci\xF3ja - Be\xE1ll\xEDt\xE1sok alatt \xE1ll\xEDthat\xF3 be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "e-mail meger\xF5s\xEDtve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Aliasok a rovatvar\xE1zsl\xF3 \xFCdv\xF6zl\xF5j\xE9hez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Rovat neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "\xDAj felhaszn\xE1l\xF3 neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "\xDAj felhaszn\xE1l\xF3 bejelentkez\xE9si neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "\xDAj felhaszn\xE1l\xF3 szerepk\xF6re (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Nevem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "E-mail-c\xEDmem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasok a felhaszn\xE1l\xF3i sablonokhoz (a felhaszn\xE1l\xF3 \xF6sszes aliasa is haszn\xE1lhat\xF3)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasok a jelsz\xF3m\xF3dos\xEDt\xE1si e-mailhez (a felhaszn\xE1l\xF3 \xF6sszes aliasa is haszn\xE1lhat\xF3)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "HTML-hivatkoz\xE1s az aktu\xE1lis felhaszn\xE1l\xF3 jelsz\xF3m\xF3dos\xEDt\xE1si oldal\xE1ra", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "A _#PWD_LINK jelsz\xF3m\xF3dos\xEDt\xE1si hivatkoz\xE1s\xE1ban haszn\xE1lt URL-param\xE9ter (haszn\xE1lhatja, ha saj\xE1t URL-t szeretne haszn\xE1lni hozz\xE1)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
@@ -167,63 +185,126 @@ return [
 "Owner" => "Tulajdonos", // ai 2026-06
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "E-mail-sablonok", // ai 2026-06
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "\xC9rtes\xEDt\xE9sek be\xE1ll\xEDt\xE1sai", // ai 2026-06
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "A modul nem tal\xE1lhat\xF3.", // ai 2026-06
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "\xC9rtes\xEDt\xE9sek adminisztr\xE1ci\xF3ja", // ai 2026-06
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Nincs jogosults\xE1ga az oldal el\xE9r\xE9s\xE9hez", // ai 2026-06
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Ennek az \xC9rtes\xEDt\xE9sek modulnak nincs olvas\xF3list\xE1ja.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Kik\xFCld\xE9sek \xE9s statisztik\xE1k", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "A megnyit\xE1sokat \xE9s kattint\xE1sokat a rendszer nem m\xE9ri: a list\xE1nak nincs statisztikai rovata.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Be\xE1ll\xEDt\xE1sok", // ai 2026-06
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "D\xE1tum", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97
+"Name" => "N\xE9v", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97
+"State" => "\xC1llapot", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "C\xEDmzettek", // ai 2026-06
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Megnyit\xE1sok", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Kattint\xE1sok", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "A lista m\xE9g semmit sem k\xFCld\xF6tt ki.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Egyetlen c\xEDmzett sem felel meg a sz\xFBr\xF5nek.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "\xC9rtes\xEDt\xE9sek be\xE1ll\xEDt\xE1sai", // ai 2026-06
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "\xC9rtes\xEDt\xE9sek adminisztr\xE1ci\xF3ja", // ai 2026-06
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "V\xE1logat\xE1sok", // ai 2026-06
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "E-mailek k\xFCld\xE9se", // ai 2026-06
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "Olvas\xF3k kezel\xE9se", // ai 2026-06
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Dokument\xE1ci\xF3", // ai 2026-06
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "\xC1ltal\xE1nos", // ai 2026-06
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Nincs jogosults\xE1ga ennek az \xC9rtes\xEDt\xE9sek modulnak a szerkeszt\xE9s\xE9hez", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Az \xFBrlap lej\xE1rt; t\xF6ltse \xFAjra az oldalt, \xE9s pr\xF3b\xE1lja meg ism\xE9t.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Ezt a statisztikai rovatot nem v\xE1laszthatja", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "\xC9rtes\xEDt\xE9sek hozz\xE1ad\xE1sa", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "A lista URL-je nem https - a levelek az egykattint\xE1sos leiratkoz\xE1si fejl\xE9c n\xE9lk\xFCl mennek ki.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "nyelv", // ai 2026-06
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "\xC9rtes\xEDt\xF5 e-mailek", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "'%1' szerkeszt\xE9se", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "\xFCdv\xF6zl\xF5 e-mail", // ai 2026-06
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "\xE9rtes\xEDt\xF5 e-mail", // ai 2026-06
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "\xE9rtes\xEDt\xE9s ID", // ai 2026-06
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "A rovat, amelyben a rendszer a kik\xFCld\xE9sek megnyit\xE1sait \xE9s kattint\xE1sait sz\xE1molja; \xFCres = semmit sem m\xE9r. Minden list\xE1nak saj\xE1t rovat kell.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Nincs jogosults\xE1ga az oldal el\xE9r\xE9s\xE9hez", // ai 2026-06
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Telep\xEDt\xE9s az Alkalmaz\xE1st\xE1rb\xF3l", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Statisztika", // ai 2026-06
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Statisztikai rovat", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "\xE9rtes\xEDt\xE9s ID", // ai 2026-06
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "E-mailek k\xFCld\xE9se", // ai 2026-06
@@ -276,46 +357,46 @@ return [
  => "Defini\xE1lja a v\xE1logat\xE1sokat azokban a rovatokban, amelyekb\xF5l \xE9rtes\xEDt\xE9seket szeretne k\xFCldeni,\n"
    ."        az Alerts Selection Set t\xEDpus\xFA n\xE9zetekben", // ai 2026-06
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Szinkroniz\xE1l\xE1s az olvas\xF3kat kezel\xF5 rovattal", // ai 2026-06
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "M\xE9g nincs be\xE1ll\xEDtva", // ai 2026-06
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "V\xE1lassza ki az olvas\xF3kat kezel\xF5 rovatot", // ai 2026-06
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Ez az \xE9rtes\xEDt\xE9si gy\xFBjtem\xE9ny a felhaszn\xE1l\xF3i adatokat a k\xF6vetkez\xF5 rovatb\xF3l veszi", // ai 2026-06
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "M\xF3dos\xEDt\xE1s erre:", // ai 2026-06
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "\xE9s a(z) %1-specifikus mez\xF5k t\xF6rl\xE9se innen: %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "M\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "%1-specifikus mez\xF5k hozz\xE1ad\xE1sa ide: %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Csak azokat a mez\xF5ket adja hozz\xE1, amelyek azonos\xEDt\xF3i m\xE9g nem l\xE9teznek a rovatban.\n"
    ."    Friss\xEDti a v\xE1logat\xE1sokat tartalmaz\xF3 konstanscsoportot, ha az m\xE1r l\xE9tezik.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Mez\xF5 neve", // ai 2026-06
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "Mez\xF5azonos\xEDt\xF3", // ai 2026-06
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Mez\xF5k hozz\xE1ad\xE1sa vagy friss\xEDt\xE9se", // ai 2026-06
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Ez a parancs nem haszn\xE1lhat\xF3, am\xEDg ki nem v\xE1lasztja az olvas\xF3kat kezel\xF5 rovatot.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -371,4 +452,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "Lomt\xE1r", // ai 2026-06
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Le szeretne iratkozni a lista leveleir\xF5l?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Leiratkoz\xE1s", // ai 2026-11
 ];
