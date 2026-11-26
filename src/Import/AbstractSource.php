@@ -27,6 +27,11 @@ abstract class AbstractSource implements SourceInterface
         return Context::DEFAULT_MAX_BYTES;
     }
 
+    public function idleSeconds(): int
+    {
+        return Context::DEFAULT_IDLE_SECONDS;
+    }
+
     /** no rows - a source that imports overrides this */
     public function defaultMapping(): Mapping
     {

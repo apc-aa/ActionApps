@@ -110,10 +110,15 @@ final class ContextTest extends TestCase
             {
                 return 10;
             }
+            public function idleSeconds(): int
+            {
+                return 45;
+            }
         };
         $mock = new MockHttpClient([new MockResponse(str_repeat('x', 10)), new MockResponse(str_repeat('x', 11))]);
         $ctx  = Context::forSource($source, [], new BatchBudget(microtime(true) + 30), $mock, fn(string $host): array => throw new \LogicException("DNS asked for $host"));
 
+        self::assertSame(45, (new \ReflectionProperty(Context::class, 'idleSeconds'))->getValue($ctx));
         self::assertSame(10, strlen($ctx->http()->request('GET', 'https://1.1.1.1/a')->body));
         $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/b'));
     }
@@ -257,6 +262,15 @@ final class ContextTest extends TestCase
         $ctx = new Context([], new BatchBudget(microtime(true) + 30), 500 * 1024 * 1024);
 
         self::assertSame(Context::MAX_BYTES_CAP, (new \ReflectionProperty(Context::class, 'maxBytes'))->getValue($ctx));
+    }
+
+    public function test_context_idleSecondsCapped(): void
+    {
+        $idle = static fn(int $seconds): int => (new \ReflectionProperty(Context::class, 'idleSeconds'))->getValue(new Context([], new BatchBudget(microtime(true) + 30), idleSeconds: $seconds));
+
+        self::assertSame([45, Context::IDLE_SECONDS_CAP], [$idle(45), $idle(3600)]);
+        $this->expectException(\InvalidArgumentException::class);
+        $idle(0);
     }
 
     public function test_context_rejectsZeroMaxBytes(): void
