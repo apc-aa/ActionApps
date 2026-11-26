@@ -92,7 +92,7 @@ class AaParamsElement extends HTMLElement {
         // everything is built aside first - an error on the way leaves the original controls as they were
         this.#desc = el('div', 'aa-params-desc');
         this.#box = el('div', 'aa-params-box');
-        const title = el('h3');
+        const title = el('strong');
         title.textContent = this.#labels.params;
         this.#rows = el('div', 'aa-params-rows');
         this.#box.append(title, this.#rows);
@@ -255,25 +255,33 @@ class AaParamsElement extends HTMLElement {
         }
         input.id = id;
         input.dataset.param = param.id;
-        if (param.example && ((input.type === 'text') || (input.tagName === 'TEXTAREA'))) {
-            input.placeholder = labels.eg.replace('%1', param.example);
-        }
         ctl.append(input);
 
-        if (param.help) {
+        const example = param.example && ((input.type === 'text') || (input.tagName === 'TEXTAREA'));
+        if (param.help || example) {
             const hlp = el('div', 'aa-params-hlp');
             hlp.id = id + '-hlp';
-            hlp.innerHTML = param.help;
+            hlp.innerHTML = param.help ?? '';
             input.setAttribute('aria-describedby', hlp.id);
             ctl.append(hlp);
-            if ((hlp.textContent.length > 95) || /<br/i.test(param.help)) {
+            // the toggle sits inside the clamped help, its arrow turns with .is-clamped
+            if ((hlp.textContent.length > 95) || /<br/i.test(param.help ?? '')) {
                 hlp.classList.add('is-clamped');
                 const more = el('button', 'aa-params-more');
                 more.type = 'button';
                 more.textContent = labels.more;
                 more.setAttribute('aria-expanded', 'false');
                 more.setAttribute('aria-controls', hlp.id);
-                ctl.append(more);
+                hlp.prepend(more);
+            }
+            if (example) {
+                // the example below the help, not as a placeholder: it stays visible while typing
+                const [before, after = ''] = labels.eg.split('%1');
+                const value = el('em');
+                value.textContent = param.example;
+                const eg = el('span', 'aa-params-eg');
+                eg.append(before, value, after);
+                hlp.append(eg);
             }
         }
         row.append(label, ctl);

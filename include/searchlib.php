@@ -2247,8 +2247,8 @@ class QueryZidsHelper
         if ($field->storageTable() === 'item') {
             return '';
         }
-        foreach ($this->slices as $slice_id) {
-            if (isset(AA_Slice::getOwnModule($slice_id)?->protectedFieldIds()[$field->getId()])) {
+        foreach (AA_Slice::protectedFieldIdsOf($this->slices) as $slice_id => $protected) {
+            if (isset($protected[$field->getId()])) {
                 return (string) $slice_id;
             }
         }
@@ -2261,8 +2261,8 @@ class QueryZidsHelper
     private static function unprotectedSql(string $tbl, array $slice_ids): string
     {
         $protected = [];
-        foreach ($slice_ids as $slice_id) {
-            $protected += AA_Slice::getOwnModule($slice_id)?->protectedFieldIds() ?? [];
+        foreach (AA_Slice::protectedFieldIdsOf($slice_ids) as $ids) {
+            $protected += $ids;
         }
         $protected = array_values(array_filter(array_map('strval', array_keys($protected)), static fn(string $id): bool => !AA_Field::isProtectedType(AA_Fields::getFieldType($id))));
         sort($protected);   // the same SQL for the same fields

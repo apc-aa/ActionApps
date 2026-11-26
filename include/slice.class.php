@@ -897,6 +897,49 @@ class AA_Slice extends AA_Module
     }
 
     /**
+     * protectedFieldIds() of each slice, without building the fields of the slices that have not built them:
+     * one query on `field` answers for all of them. Conditions and sorts ask it across all the listed slices
+     * (a router looks a path up in all the slices of a site), and building their fields took ~1 ms a slice.
+     * A slice whose fields another slice defines (fieldslice) builds them - its rows in `field` are not all.
+     * @param string[] $slice_ids
+     * @return array<string, array<string, true>> slice id => protected field ids as keys, in the order given
+     */
+    public static function protectedFieldIdsOf(array $slice_ids): array
+    {
+        $ret = $unbuilt = [];
+        foreach ($slice_ids as $slice_id) {
+            $slice_id = (string) $slice_id;
+            if (!($slice = self::getOwnModule($slice_id))) {
+                $ret[$slice_id] = [];
+            } elseif (($slice->protected_field_ids === null) && !$slice->getFields()->isLoaded()) {
+                $ret[$slice_id]     = null;    // keeps the order
+                $unbuilt[$slice_id] = $slice;
+            } else {
+                $ret[$slice_id] = $slice->protectedFieldIds();
+            }
+        }
+        if (!$unbuilt) {
+            return $ret;
+        }
+        $object_ids = [];
+        foreach ($unbuilt as $slice_id => $slice) {
+            $object_ids[self::getModuleObjectId($slice_id)] = $slice_id;
+        }
+        foreach (AA_Object::loadProperties(array_keys($object_ids), 'fieldslice') as $object_id => $values) {
+            // any slice id among the rows - load() reads one of them, so a doubt builds the fields
+            if (array_filter($values, static fn($value): bool => is_long_id((string) $value))) {
+                $slice_id       = $object_ids[$object_id];
+                $ret[$slice_id] = $unbuilt[$slice_id]->protectedFieldIds();
+                unset($unbuilt[$slice_id]);
+            }
+        }
+        foreach (AA_Fields::protectedIdsOf(array_keys($unbuilt)) as $slice_id => $ids) {
+            $ret[$slice_id] = $unbuilt[$slice_id]->protected_field_ids = $ids;
+        }
+        return $ret;
+    }
+
+    /**
      * @param $field_id
      *
      * @return Widget|null

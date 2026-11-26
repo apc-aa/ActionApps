@@ -293,11 +293,7 @@ if ($slice && $slice->getProperty("type") === 'ReaderManagement') {
 }
 FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
 
-FrmStaticText(_m("Id"), $slice_id);
-
-$created_at  = $sarr['created_at'] ? date('Y-m-d H:i', $sarr['created_at']) : '-';
-$created_by  = $sarr['created_by'] ? perm_username($sarr['created_by']) : '-';
-FrmStaticText(_m("Created"), safe($created_at) . ' ' . safe(_m('by')) . ' ' . safe($created_by), "", "", false);
+FrmModuleIdCreated((string) $slice_id, $sarr['created_at'] ?? null, $sarr['created_by'] ?? null);
 
 if ($slice_id) {
     FrmTabSeparator(_m("Additional setting"));

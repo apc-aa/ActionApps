@@ -45,6 +45,9 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
      *  where the slice does not define it */
     public const PROTECTED_TYPES = ['password', 'secret'];
 
+    /** the columns of `field` protectedIds() reads - AA_Fields::protectedIdsOf() selects only these */
+    public const PROTECTION_COLUMNS = ['id', 'input_insert_func', 'content_edit'];
+
     /** @var string[] list of field table rows manager by this class - other are unused */
     public const USED_FIELDS = ['id', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'required', 'feed', 'multiple', 'input_show_func', 'search_pri', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'content_edit', 'html_default', 'html_show', 'in_item_tbl', 'input_validate', 'input_insert_func', 'input_show', 'text_stored', 'aditional'];
 
@@ -745,7 +748,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         $ret .= "
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"" . ($required ? " checked" : "") . "></td>
-        <td><input type=\"checkbox\" name=\"shw[$id]\"" . ($show ? " checked" : "") . ">" . $this->showConditionSelect($conds) . "</td>";
+        <td><div class=\"nowrap\"><input type=\"checkbox\" name=\"shw[$id]\"" . ($show ? " checked" : "") . ">" . $this->showConditionSelect($conds) . "</div></td>";
         $ret .= "<td>" . $this->linkToField(_m("Edit"), '', ['class' => 'aa-button-edit']) . "</td>";
         if ($type === "in_item_tbl") {
             $ret .= "<td></td>";
@@ -795,7 +798,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         }
         // raw names - getFrmSelectEasy() safe()s the labels
         return ' ' . getFrmSelectEasy('shwif[' . $this->getId() . ']', $opts, $key, ['class' => 'aa-showif-sel', 'aria-label' => _m('Display condition'), 'title' => _m('Display condition')])
-            . '<button type="button" class="aa-showif-edit" title="' . safe(_m('Edit the condition')) . '" aria-label="' . safe(_m('Edit the condition')) . '">✎</button>';
+            . '<button type="button" class="aa-showif-edit" title="' . safe(_m('Edit the condition')) . '" aria-label="' . safe(_m('Edit the condition')) . '"></button>';
     }
 
     // Array Access implementation is in the DataArrayAccessTrait  --------------------------
@@ -1068,6 +1071,12 @@ class AA_Fields implements IteratorAggregate, Countable
         }
     }
 
+    /** all the fields are built - load() ran */
+    public function isLoaded(): bool
+    {
+        return $this->loaded_all;
+    }
+
     /** load all fields function  */
     public function load(): void
     {
@@ -1076,7 +1085,7 @@ class AA_Fields implements IteratorAggregate, Countable
         }
         $this->fields = [];
         $flds = implode(',', array_map(static fn($value) => "`$value`", AA_Field::USED_FIELDS));
-        $a = DB_AA::select(['id' => []], "SELECT $flds FROM `field`", [['`slice_id`', $this->master_id, 'l'], ['`id`', '_', ($this->collection == 0) ? 'NOT BEGIN' : 'BEGIN']], ['input_pri']);
+        $a = DB_AA::select(['id' => []], "SELECT $flds FROM `field`", self::rowsWhere($this->master_id, $this->collection), ['input_pri']);
         foreach ($a as $fid => $data) {
             $this->fields[$fid] = new AA_Field($data);
         }
@@ -1088,6 +1097,38 @@ class AA_Fields implements IteratorAggregate, Countable
         }
 
         $this->loaded_all = true;
+    }
+
+    /** the `field` rows of the fields of the masters - load() and protectedIdsOf() read the same
+     *  @param string|string[] $master_ids */
+    private static function rowsWhere(string|array $master_ids, int $collection): array
+    {
+        return [['`slice_id`', $master_ids, 'l'], ['`id`', '_', ($collection == 0) ? 'NOT BEGIN' : 'BEGIN']];
+    }
+
+    /**
+     * AA_Field::protectedIds() of the fields of each master from one query on their `field` rows, without
+     * building the fields. Not for a master whose fields another slice defines (fieldslice) - its rows are
+     * not all its fields.
+     * @param string[] $master_ids
+     * @return array<string, array<string, true>> master id => protected field ids as keys
+     */
+    public static function protectedIdsOf(array $master_ids): array
+    {
+        if (!$master_ids) {
+            return [];
+        }
+        $cols   = implode(',', array_map(static fn(string $col): string => "`$col`", AA_Field::PROTECTION_COLUMNS));
+        $empty  = array_fill_keys(AA_Field::USED_FIELDS, '');
+        $fields = [];
+        foreach (DB_AA::select([], "SELECT LOWER(HEX(`slice_id`)) AS unpackid, $cols FROM `field`", self::rowsWhere($master_ids, 0)) as $row) {
+            $fields[$row['unpackid']][] = new AA_Field(array_intersect_key($row, $empty) + $empty);
+        }
+        $ret = [];
+        foreach ($master_ids as $master_id) {
+            $ret[$master_id] = AA_Field::protectedIds($fields[strtolower($master_id)] ?? []);
+        }
+        return $ret;
     }
 
     public static function loadFieldFromSlice($fields_slice, $actual_slice): array

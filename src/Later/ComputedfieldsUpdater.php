@@ -43,6 +43,20 @@ class ComputedfieldsUpdater implements LaterInterface
         }
     }
 
+    /** Recomputes the items of the slice soon, as a changed slice setting field may be read by their
+     *  computed fields - the same as a changed field of the item. Own selector: the periodic task
+     *  of the slice may be planned for next month.
+     */
+    public static function planItems(string $sid): void
+    {
+        foreach (AA_Slice::getOwnModule($sid)?->getFields() ?? [] as $field) {
+            if (($fnc = ParseFnc($field->getProperty('input_insert_func'))) && in_array($fnc['fnc'], ['co2', 'com'], true)) {
+                (new Toexecute())->laterOnce(new self(), [$sid], "ComputedfieldsUpdater_now_$sid", 100);
+                return;
+            }
+        }
+    }
+
     /** the time of the next recompute for the interval number from plan() */
     private static function nextRun(int $interval): ?int
     {
@@ -75,6 +89,7 @@ class ComputedfieldsUpdater implements LaterInterface
             if (!$slice?->isValid() || !$slice->updateComputedSettingFields()) {
                 return '0';
             }
+            self::planItems($sid);
             AA::Pagecache()->invalidateFor($sid);
             return '1';
         }
@@ -94,6 +109,9 @@ class ComputedfieldsUpdater implements LaterInterface
 
         $item_updater = new ComputedfieldsItemUpdater();
         $toexecute = new Toexecute();
+        // the chunks still waiting hold other (shuffled) ids - laterOnce() would keep them and skip
+        // the new chunk of the same number, so an item could miss this run
+        $toexecute->cancelBeginning("AA_ComputedfieldsItem_Updater_{$sid}_");
         foreach ($chunks as $k => $ids) {
             $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_" . $sid . '_' . $k, 40, time() + 10);
         }
