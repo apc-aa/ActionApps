@@ -42,6 +42,7 @@ use AA\Api\JsonResponse;
 use AA\Central\ResponderPolicy;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
+use AA\Optimize\UpdateDbStructure;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -379,7 +380,7 @@ function optimize_problem_steps(array $r): array
 
 function optimize_long_locks_help(): string
 {
-    return _m('A table over 512 MB whose change needs a copy (Update database structure) is changed too - its writes wait minutes meanwhile, the reads go on. Best at night; without it such a table is left as it is and the repair says so.');
+    return _m('A table over %1 MB whose change needs a copy (Update database structure) is changed too - its writes wait minutes meanwhile, the reads go on. Best at night; without it such a table is left as it is and the repair says so.', [UpdateDbStructure::SHARED_SIZE >> 20]);
 }
 
 function optimize_status(string $status, string $method): string

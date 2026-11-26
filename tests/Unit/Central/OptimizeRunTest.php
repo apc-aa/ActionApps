@@ -36,6 +36,7 @@ namespace Tests\Unit\Central {
     use AA\Later\BatchBudgetSpent;
     use AA\Later\BatchFailed;
     use AA\Later\BatchStep;
+    use AA_Request;
     use AA_Response;
     use InvalidArgumentException;
     use LogicException;
@@ -93,13 +94,13 @@ namespace Tests\Unit\Central {
         private function remote(array $answers): void
         {
             $asked = &$this->asked;
-            OptimizeRun::setTestRemote(static function (int $aa, string $task, string $method, int $timeout) use (&$answers, &$asked): ?AA_Response {
+            OptimizeRun::setTestRemote(static function (int $aa, string $task, string $method, int $timeout, AA_Request $request) use (&$answers, &$asked): ?AA_Response {
                 $list   = &$answers[$aa];
                 $answer = (count($list) > 1) ? array_shift($list) : $list[0];
                 if ($answer === self::SPENT) {
                     throw new BatchBudgetSpent('no time left');
                 }
-                $asked[] = [$aa, $task, $method, $timeout];
+                $asked[] = [$aa, $task, $method, $timeout, $request->params];
                 return $answer;
             });
         }
@@ -174,11 +175,20 @@ namespace Tests\Unit\Central {
             $this->assertFalse($run->longLocks());
         }
 
-        public function test_begin_keeps_the_long_locks_for_the_steps(): void
+        public function test_a_repair_with_long_locks_sends_them_with_the_repair_only(): void
         {
+            $this->remote([1 => [self::err(), self::ok('<p>repaired</p>'), self::ok()]]);
             $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'repair', [1], self::USER, true)->getId();
 
             $this->assertTrue(OptimizeRun::get($id)?->longLocks());
+            $this->assertSame(OptimizeRun::DONE, self::runQueued($id));
+            $this->assertSame([false, true, false], array_map(static fn(array $a): bool => $a[4]['long_locks'] ?? false, $this->asked));
+        }
+
+        public function test_begin_a_test_keeps_no_long_locks(): void
+        {
+            // nothing of a test uses them - the run would claim what did not happen
+            $this->assertFalse(OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'test', [1], self::USER, true)->longLocks());
         }
 
         public function test_request_long_locks_go_with_a_repair_only(): void
@@ -313,10 +323,10 @@ namespace Tests\Unit\Central {
             $seen = [];
             $this->remote([1 => [self::ok()], 2 => [self::err()]]);
             $real = (new \ReflectionProperty(OptimizeRun::class, 'testRemote'))->getValue();
-            OptimizeRun::setTestRemote(static function (int $aa, string $task, string $method, int $timeout) use ($real, &$id, &$seen): ?AA_Response {
+            OptimizeRun::setTestRemote(static function (int $aa, string $task, string $method, int $timeout, AA_Request $request) use ($real, &$id, &$seen): ?AA_Response {
                 $run       = OptimizeRun::get($id);
                 $seen[$aa] = [array_keys($run->results()), $run->done(), $run->asking(OptimizeRun::clock())];
-                return $real($aa, $task, $method, $timeout);
+                return $real($aa, $task, $method, $timeout, $request);
             });
             $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'test', [1, 2], self::USER)->getId();
 

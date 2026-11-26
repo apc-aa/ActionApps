@@ -124,7 +124,7 @@ if (!$silent) {
             <small>Check this for real work with writing to database</small>
             <br>
             Allow long table locks <input type="checkbox" name="long_locks" value="1"' . ($long ? ' checked' : '') . '><br>
-            <small>A table over 512 MB whose change needs a copy is changed too - its writes wait minutes meanwhile; best at night</small>
+            <small>A table over ' . (UpdateDbStructure::SHARED_SIZE >> 20) . ' MB whose change needs a copy is changed too - its writes wait minutes meanwhile; best at night</small>
             <br><br>
 
             <input type="submit" name="dotest" value="Test">

@@ -322,7 +322,7 @@ namespace Tests\Unit\Optimize {
             self::assertTrue($optimize->repair());
             self::assertSame(['ALTER TABLE `content` MODIFY COLUMN `text` longtext, LOCK=SHARED'], self::alterLog());   // the refused one is not logged
             self::assertSame(2, RecordingDb::count('SET SESSION sql_mode = @aa_sql_mode'));
-            self::assertMatchesRegularExpression('/content \(130 MB\) copied - its writes waited \d+ s/', $optimize->report());
+            self::assertMatchesRegularExpression('/content \(130 MB\) changed - its writes waited \d+ s/', $optimize->report());
         }
 
         public function test_repair_hugeTableNeedingALock_notChangedWithoutLongLocks(): void
@@ -359,7 +359,55 @@ namespace Tests\Unit\Optimize {
 
             self::assertFalse($optimize->repair());
             self::assertStringContainsString('content not changed - the database refused the change: SQLSTATE[22001]', $optimize->report());
-            self::assertStringNotContainsString('copied', $optimize->report());
+            self::assertStringNotContainsString('its writes waited', $optimize->report());
+        }
+
+        public function test_repair_tooManyWritesDuringTheChange_notLockedTryLater(): void
+        {
+            // 1799: the online log overflowed - a lock now would stop the writes just when there are most of them
+            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
+            RecordingDb::$fail_error = 'SQLSTATE[HY000]: General error: 1799 Creating index \'PRIMARY\' required more than \'innodb_online_alter_log_max_size\' bytes of modification log';
+            self::tableSize(130 * 1048576);
+            $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
+
+            self::assertFalse($optimize->repair());
+            self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));
+            self::assertStringContainsString('Too many writes came meanwhile - run the repair again when the traffic is low', $optimize->report());
+        }
+
+        public function test_repair_lockedChangeOfAnOldCompactTable_rebuiltAsDynamic(): void
+        {
+            // the copy runs into the 8 kB row limit as the small table does
+            self::liveTable('InnoDB', 'Compact', 130 * 1048576);
+            RecordingDb::$fail_if = static fn(string $sql): ?string => match (true) {
+                !str_starts_with($sql, 'ALTER')    => null,
+                str_ends_with($sql, ', LOCK=NONE') => 'SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported',
+                !str_contains($sql, 'ROW_FORMAT')  => 'SQLSTATE[42000]: Syntax error or access violation: 1118 Row size too large.',
+                default                            => null,
+            };
+
+            self::assertTrue(self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()])->repair());
+            self::assertSame(['ALTER TABLE `content` MODIFY COLUMN `text` longtext, ROW_FORMAT=DYNAMIC, LOCK=SHARED'], self::alterLog());
+        }
+
+        public function test_repair_lockedChange_rowsThatDoNotFitCheckedBeforeTheCopy(): void
+        {
+            // the copy would stop at the NULL after minutes of waiting writes, and so again on each update
+            self::noLockRefused();
+            RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_contains($sql, 'information_schema.TABLES') => [['TABLE_NAME' => 'content', 'ENGINE' => 'InnoDB', 'ROW_FORMAT' => 'Dynamic', 'size' => 130 * 1048576]],
+                str_contains($sql, 'AS misfit') && str_contains($sql, '`item_id` IS NULL') => [['misfit' => '1']],
+                default => [],
+            };
+            $live = self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', ''], 'text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]);
+
+            self::assertFalse(self::optimize(['content' => $live, 'cron' => self::cron()])->test());
+            self::assertSame(0, RecordingDb::count('SELECT 1 AS misfit'), 'no scan of a big table for the test');
+            $optimize = self::optimize(['content' => $live, 'cron' => self::cron()]);
+
+            self::assertTrue($optimize->repair());
+            self::assertSame(['ALTER TABLE `content` MODIFY COLUMN `text` longtext, LOCK=SHARED'], self::alterLog());
+            self::assertStringContainsString('item_id varbinary(16) (template varbinary(16)) - the data do not fit', $optimize->report());
         }
 
         public function test_repair_bigTableRefusedForTheData_notListedForTheNight(): void

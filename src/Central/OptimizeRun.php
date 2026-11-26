@@ -70,7 +70,7 @@ final class OptimizeRun extends CentralRun
      *  first and the second failure in a row - longer together than a remote sql_update may run (360 s) */
     protected const RETRY = [60, 120, 300];
 
-    /** @var ?Closure(int, string, string, int): ?AA_Response */
+    /** @var ?Closure(int, string, string, int, AA_Request): ?AA_Response */
     private static ?Closure $testRemote = null;
 
     /** JSON list of central_conf ids, in the order they are asked */
@@ -123,7 +123,7 @@ final class OptimizeRun extends CentralRun
             'aas'        => json_encode($aas, JSON_THROW_ON_ERROR),
             'task'       => $task,
             'method'     => $method,
-            'long_locks' => $long_locks ? '1' : '',
+            'long_locks' => ($long_locks && ($method === 'repair')) ? '1' : '',
             'position'   => self::at(0),
         ])->getId());
         // read again: the instance of start() is not the run as stored
@@ -210,7 +210,7 @@ final class OptimizeRun extends CentralRun
         DB_AA::transaction(static fn() => (self::lockForUpdate($id) ?? throw new BatchFailed(self::FORBIDDEN))->end($uid));
     }
 
-    /** @internal for tests only: what the AAs answer - $ask(central_conf id, task, method, timeout);
+    /** @internal for tests only: what the AAs answer - $ask(central_conf id, task, method, timeout, the command);
      *  null as its answer = no such row; null = the real AAs */
     public static function setTestRemote(?Closure $ask): void
     {
@@ -392,9 +392,10 @@ final class OptimizeRun extends CentralRun
     private function ask(int $aa, string $method, BatchBudget $budget): array
     {
         $timeout  = max(1, (int) floor($budget->httpTimeout()));
+        $request  = self::request($this->task(), $method, $this->longLocks());
         $response = self::$testRemote
-            ? (self::$testRemote)($aa, $this->task(), $method, $timeout)
-            : Actionapps::find($aa)?->getResponse(self::request($this->task(), $method, $this->longLocks()), $timeout);
+            ? (self::$testRemote)($aa, $this->task(), $method, $timeout, $request)
+            : Actionapps::find($aa)?->getResponse($request, $timeout);
         return ($response === null) ? ['kind' => self::REFUSED, 'text' => _m('No such AA in the Central list any more')] : self::answer($response);
     }
 
