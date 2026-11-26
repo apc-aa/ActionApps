@@ -313,6 +313,8 @@ final class FakeFields extends AA_Fields
         foreach ($fields as $field) {
             $this->map[$field->getId()] = $field;
         }
+        $this->fields     = $this->map;   // for the methods not overridden here
+        $this->loaded_all = true;         // the map is all the fields - nothing is read from the database
     }
 
     public function getField(string $field_id): ?AA_Field
