@@ -1028,6 +1028,12 @@ class AA_Fields implements IteratorAggregate, Countable
         $this->collection     = $collection;
     }
 
+    /** the "slice (setting) fields" of the slice, not the fields of its items */
+    public function isSettingCollection(): bool
+    {
+        return $this->collection !== 0;
+    }
+
     /** use instead of constructor - there was multiple AA_Fields for the same slice - in getSearchFields() */
     public static function factoryFor(string $master_id, int $collection = 0): static
     {

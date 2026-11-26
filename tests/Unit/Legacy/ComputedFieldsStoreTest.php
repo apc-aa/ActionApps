@@ -149,7 +149,7 @@ namespace Tests\Unit\Legacy {
                 // the alias of a setting field - the slice aliases do not have it
                 $this->field('_rate...........', 'qte', ['alias1' => '_#RATE____', 'alias1_func' => 'f_h', 'alias1_help' => '']),
                 $this->field($setting_field, 'co2:_#RATE____x:_#RATE____x::minute'),
-            ]));
+            ], 1));
             RecordingDb::$content = [
                 $this->row(self::SLICE, '_rate...........', 0, '25', FLAG_TEXT_STORED),
                 $this->row(self::SLICE, $setting_field, 0, 'old', FLAG_TEXT_STORED),

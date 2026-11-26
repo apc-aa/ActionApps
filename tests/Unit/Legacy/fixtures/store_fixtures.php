@@ -307,9 +307,9 @@ final class FakeFields extends AA_Fields
     private array $map = [];
 
     /** @param AA_Field[] $fields */
-    public function __construct(string $slice_id, array $fields)
+    public function __construct(string $slice_id, array $fields, int $collection = 0)
     {
-        parent::__construct($slice_id);
+        parent::__construct($slice_id, $collection);
         foreach ($fields as $field) {
             $this->map[$field->getId()] = $field;
         }

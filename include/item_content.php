@@ -1582,7 +1582,7 @@ class ItemContent extends AA_Content
         if (!$fields) {
             $fields = $slice->getFields();
         }
-        $setting_fields = AA_Fields::isSliceField((string) ($fields->getPriorityArray()[0] ?? ''));
+        $setting_fields = $fields->isSettingCollection();
 
         foreach ($fields as $fid => $field) {
 
